@@ -536,6 +536,11 @@ class Rename
         statistics::Scalar tempSerializing;
         /** Number of instructions inserted into skid buffers. */
         statistics::Scalar skidInsts;
+
+
+        // lin
+        statistics::Scalar brename_any_mop_vld_ren_dec_stall_rr;
+        statistics::Scalar rename_any_mop_vld_brename_any_update;
     } stats;
 };
 

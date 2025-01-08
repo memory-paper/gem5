@@ -145,7 +145,13 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
       ADD_STAT(tempSerializing, statistics::units::Count::get(),
                "count of temporary serializing insts renamed"),
       ADD_STAT(skidInsts, statistics::units::Count::get(),
-               "count of insts added to the skid buffer")
+               "count of insts added to the skid buffer"),
+      // lin
+      ADD_STAT(rename_any_mop_vld_brename_any_update, statistics::units::Count::get(),
+               "count of rename_any_mop_vld & ~rename_any_update"),
+      ADD_STAT(brename_any_mop_vld_ren_dec_stall_rr, statistics::units::Count::get(),
+               "count of ~rename_any_mop_vld & ren_dec_stall_rr")
+
 {
     squashCycles.prereq(squashCycles);
     idleCycles.prereq(idleCycles);
@@ -162,6 +168,9 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
     LQFullEvents.prereq(LQFullEvents);
     SQFullEvents.prereq(SQFullEvents);
     fullRegistersEvents.prereq(fullRegistersEvents);
+
+    brename_any_mop_vld_ren_dec_stall_rr.prereq(brename_any_mop_vld_ren_dec_stall_rr);
+    rename_any_mop_vld_brename_any_update.prereq(rename_any_mop_vld_brename_any_update);
 
     renamedOperands.prereq(renamedOperands);
     lookups.prereq(lookups);
@@ -514,6 +523,9 @@ Rename::renameInsts(ThreadID tid)
     int insts_available = renameStatus[tid] == Unblocking ?
         skidBuffer[tid].size() : insts[tid].size();
 
+    // lin 
+    int insts_available_total = insts_available;
+
     // Check the decode queue to see if instructions are available.
     // If there are no available instructions to rename, then do nothing.
     if (insts_available == 0) {
@@ -521,6 +533,7 @@ Rename::renameInsts(ThreadID tid)
                 tid);
         // Should I change status to idle?
         ++stats.idleCycles;
+        stats.brename_any_mop_vld_ren_dec_stall_rr++;
         return;
     } else if (renameStatus[tid] == Unblocking) {
         ++stats.unblockCycles;
@@ -596,6 +609,10 @@ Rename::renameInsts(ThreadID tid)
     }
 
     int renamed_insts = 0;
+
+
+    
+
 
     while (insts_available > 0 &&  toIEWIndex < renameWidth) {
         DPRINTF(Rename, "[tid:%i] Sending instructions to IEW.\n", tid);
@@ -734,6 +751,10 @@ Rename::renameInsts(ThreadID tid)
 
         // Decrement how many instructions are available.
         --insts_available;
+    }
+
+    if(insts_available > 0 && renamed_insts == 0){
+        stats.rename_any_mop_vld_brename_any_update++;
     }
 
     instsInProgress[tid] += renamed_insts;
