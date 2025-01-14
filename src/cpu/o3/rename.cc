@@ -147,7 +147,32 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
       ADD_STAT(skidInsts, statistics::units::Count::get(),
                "count of insts added to the skid buffer"),
       // lin
-      ADD_STAT(rename_any_mop_vld_brename_any_update, statistics::units::Count::get(),
+      ADD_STAT(lin_instEmpty, statistics::units::Count::get(),
+               "count of skidbuff inst empty"),
+      ADD_STAT(lin_skidBufferInstEmpty, statistics::units::Count::get(),
+               "count of skidbuff inst empty"),
+      ADD_STAT(lin_insts_from_decode, statistics::units::Count::get(),
+               "count of skidbuff inst empty"),
+      ADD_STAT(lin_insts_skid_buff, statistics::units::Count::get(),
+               "count of skidbuff inst empty"),
+
+      ADD_STAT(lin_serialize, statistics::units::Count::get(),
+               "count of serialize"),
+      ADD_STAT(lin_rename_stall, statistics::units::Count::get(),
+               "count of serialize"),
+      ADD_STAT(lin_flush_stall, statistics::units::Count::get(),
+               "count of serialize"),
+      ADD_STAT(lin_insts_from_decode_empty, statistics::units::Count::get(),
+               "count of rename_any_mop_vld & ~rename_any_update"),
+      ADD_STAT(lin_no_free_entries, statistics::units::Count::get(),
+               "count of rename_any_mop_vld & ~rename_any_update"),
+      ADD_STAT(lin_no_enough_entries, statistics::units::Count::get(),
+               "count of rename_any_mop_vld & ~rename_any_update"),
+      ADD_STAT(lin_fullRegistersEvents, statistics::units::Count::get(),
+               "count of rename_any_mop_vld & ~rename_any_update"),
+      ADD_STAT(lin_serialize_stall, statistics::units::Count::get(),
+               "count of rename_any_mop_vld & ~rename_any_update"),
+      ADD_STAT(lin_has_renameinsts, statistics::units::Count::get(),
                "count of rename_any_mop_vld & ~rename_any_update"),
       ADD_STAT(brename_any_mop_vld_ren_dec_stall_rr, statistics::units::Count::get(),
                "count of ~rename_any_mop_vld & ren_dec_stall_rr")
@@ -169,8 +194,36 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
     SQFullEvents.prereq(SQFullEvents);
     fullRegistersEvents.prereq(fullRegistersEvents);
 
+    lin_serialize.prereq(lin_instEmpty);
+    lin_serialize.prereq(lin_skidBufferInstEmpty);
+    lin_serialize.prereq(lin_insts_from_decode);
+    lin_serialize.prereq(lin_insts_skid_buff);
+
+    lin_serialize.prereq(lin_serialize);
+    lin_serialize.prereq(lin_rename_stall);
+    lin_serialize.prereq(lin_flush_stall);
     brename_any_mop_vld_ren_dec_stall_rr.prereq(brename_any_mop_vld_ren_dec_stall_rr);
+    lin_insts_from_decode_empty.prereq(lin_insts_from_decode_empty);
+    lin_no_free_entries.prereq(lin_no_free_entries);
+    lin_no_enough_entries.prereq(lin_no_enough_entries);
+    lin_fullRegistersEvents.prereq(lin_fullRegistersEvents);
+    lin_serialize_stall.prereq(lin_serialize_stall);
+    lin_rename_stall.prereq(lin_rename_stall);
+    lin_has_renameinsts.prereq(lin_has_renameinsts);
+
+
+
+
+
     rename_any_mop_vld_brename_any_update.prereq(rename_any_mop_vld_brename_any_update);
+
+
+    lin_rename_stall_from_iew.prereq(lin_rename_stall_from_iew);
+    lin_rename_stall_no_ROB.prereq(lin_rename_stall_no_ROB);
+    lin_rename_stall_no_IQ.prereq(lin_rename_stall_no_IQ);
+    lin_rename_stall_no_LSQ.prereq(lin_rename_stall_no_LSQ);
+    lin_rename_stall_Serialize_ROB_not_empty.prereq(lin_rename_stall_Serialize_ROB_not_empty);
+
 
     renamedOperands.prereq(renamedOperands);
     lookups.prereq(lookups);
@@ -471,7 +524,7 @@ Rename::rename(bool &status_change, ThreadID tid)
     //     check if stall conditions have passed
 
     if (renameStatus[tid] == Blocked) {
-        ++stats.blockCycles;
+        ++stats.blockCycles;    
     } else if (renameStatus[tid] == Squashing) {
         ++stats.squashCycles;
     } else if (renameStatus[tid] == SerializeStall) {
@@ -479,6 +532,7 @@ Rename::rename(bool &status_change, ThreadID tid)
         // If we are currently in SerializeStall and resumeSerialize
         // was set, then that means that we are resuming serializing
         // this cycle.  Tell the previous stages to block.
+        ++stats.lin_serialize;
         if (resumeSerialize) {
             resumeSerialize = false;
             block(tid);
@@ -498,7 +552,6 @@ Rename::rename(bool &status_change, ThreadID tid)
                 "[tid:%i] "
                 "Not blocked, so attempting to run stage.\n",
                 tid);
-
         renameInsts(tid);
     } else if (renameStatus[tid] == Unblocking) {
         renameInsts(tid);
@@ -533,7 +586,7 @@ Rename::renameInsts(ThreadID tid)
                 tid);
         // Should I change status to idle?
         ++stats.idleCycles;
-        stats.brename_any_mop_vld_ren_dec_stall_rr++;
+        ++stats.lin_insts_from_decode_empty;
         return;
     } else if (renameStatus[tid] == Unblocking) {
         ++stats.unblockCycles;
@@ -563,6 +616,7 @@ Rename::renameInsts(ThreadID tid)
                 tid, free_rob_entries, free_iq_entries);
 
         blockThisCycle = true;
+        stats.lin_no_free_entries++;
 
         block(tid);
 
@@ -578,6 +632,8 @@ Rename::renameInsts(ThreadID tid)
                 tid, insts_available, min_free_entries);
 
         insts_available = min_free_entries;
+
+        stats.lin_no_enough_entries++;
 
         blockThisCycle = true;
 
@@ -683,6 +739,8 @@ Rename::renameInsts(ThreadID tid)
             blockThisCycle = true;
             insts_to_rename.push_front(inst);
             ++stats.fullRegistersEvents;
+            ++stats.lin_fullRegistersEvents;
+
 
             break;
         }
@@ -714,6 +772,7 @@ Rename::renameInsts(ThreadID tid)
             serializeInst[tid] = inst;
 
             blockThisCycle = true;
+            stats.lin_serialize_stall++;
 
             break;
         } else if ((inst->isStoreConditional() || inst->isSerializeAfter()) &&
@@ -753,9 +812,6 @@ Rename::renameInsts(ThreadID tid)
         --insts_available;
     }
 
-    if(insts_available > 0 && renamed_insts == 0){
-        stats.rename_any_mop_vld_brename_any_update++;
-    }
 
     instsInProgress[tid] += renamed_insts;
     stats.renamedInsts += renamed_insts;
@@ -769,11 +825,13 @@ Rename::renameInsts(ThreadID tid)
     // If so then block.
     if (insts_available) {
         blockThisCycle = true;
+        stats.lin_has_renameinsts++;
     }
 
     if (blockThisCycle) {
         block(tid);
         toDecode->renameUnblock[tid] = false;
+        ++stats.brename_any_mop_vld_ren_dec_stall_rr;
     }
 }
 
@@ -814,6 +872,8 @@ void
 Rename::sortInsts()
 {
     int insts_from_decode = fromDecode->size;
+
+
     for (int i = 0; i < insts_from_decode; ++i) {
         const DynInstPtr &inst = fromDecode->insts[i];
         insts[inst->threadNumber].push_back(inst);
@@ -1207,7 +1267,6 @@ unsigned
 Rename::validInsts()
 {
     unsigned inst_count = 0;
-
     for (int i=0; i<fromDecode->size; i++) {
         if (!fromDecode->insts[i]->isSquashed())
             inst_count++;
@@ -1235,19 +1294,24 @@ Rename::checkStall(ThreadID tid)
     bool ret_val = false;
 
     if (stalls[tid].iew) {
+        stats.lin_rename_stall_from_iew++;
         DPRINTF(Rename,"[tid:%i] Stall from IEW stage detected.\n", tid);
         ret_val = true;
     } else if (calcFreeROBEntries(tid) <= 0) {
+        stats.lin_rename_stall_no_ROB++;
         DPRINTF(Rename,"[tid:%i] Stall: ROB has 0 free entries.\n", tid);
         ret_val = true;
     } else if (calcFreeIQEntries(tid) <= 0) {
+        stats.lin_rename_stall_no_IQ++;
         DPRINTF(Rename,"[tid:%i] Stall: IQ has 0 free entries.\n", tid);
         ret_val = true;
     } else if (calcFreeLQEntries(tid) <= 0 && calcFreeSQEntries(tid) <= 0) {
+        stats.lin_rename_stall_no_LSQ++;
         DPRINTF(Rename,"[tid:%i] Stall: LSQ has 0 free entries.\n", tid);
         ret_val = true;
     } else if (renameStatus[tid] == SerializeStall &&
                (!emptyROB[tid] || instsInProgress[tid])) {
+        stats.lin_rename_stall_Serialize_ROB_not_empty++;
         DPRINTF(Rename,"[tid:%i] Stall: Serialize stall and ROB is not "
                 "empty.\n",
                 tid);
@@ -1315,7 +1379,6 @@ Rename::checkSignalsAndUpdate(ThreadID tid)
                 "commit.\n", tid);
 
         squash(fromCommit->commitInfo[tid].doneSeqNum, tid);
-
         return true;
     } else if (!fromCommit->commitInfo[tid].robSquashing &&
             !freeingInProgress[tid].empty()) {
@@ -1332,6 +1395,7 @@ Rename::checkSignalsAndUpdate(ThreadID tid)
     }
 
     if (checkStall(tid)) {
+        ++stats.rename_any_mop_vld_brename_any_update;
         return block(tid);
     }
 
