@@ -174,6 +174,17 @@ IEW::IEWStats::IEWStats(CPU *cpu)
     ADD_STAT(branchMispredicts, statistics::units::Count::get(),
              "Number of branch mispredicts detected at execute",
              predictedTakenIncorrect + predictedNotTakenIncorrect),
+
+    // lin
+    ADD_STAT(lin_Issue_Bandwidth_Full, statistics::units::Count::get(),
+             "Number of branch mispredicts detected at execute"),
+    ADD_STAT(lin_lqFullEvents, statistics::units::Count::get(),
+             "Number of branch mispredicts detected at execute"),
+    ADD_STAT(lin_sqFullEvents, statistics::units::Count::get(),
+             "Number of branch mispredicts detected at execute"),
+    ADD_STAT(lin_commit_robSqualsh, statistics::units::Count::get(),
+             "Number of branch mispredicts detected at execute"),
+
     executedInstStats(cpu),
     ADD_STAT(instsToCommit, statistics::units::Count::get(),
              "Cumulative count of insts sent to commit"),
@@ -656,8 +667,10 @@ IEW::checkStall(ThreadID tid)
     if (fromCommit->commitInfo[tid].robSquashing) {
         DPRINTF(IEW,"[tid:%i] Stall from Commit stage detected.\n",tid);
         ret_val = true;
+        iewStats.lin_commit_robSqualsh++;
     } else if (instQueue.isFull(tid)) {
         DPRINTF(IEW,"[tid:%i] Stall: IQ  is full.\n",tid);
+        iewStats.lin_iqFullEvents++;
         ret_val = true;
     }
 
@@ -921,6 +934,15 @@ IEW::dispatchInsts(ThreadID tid)
 
             // Call function to start blocking.
             block(tid);
+            if (dispatchStatus[tid] != Blocked &&
+            dispatchStatus[tid] != Unblocking) {
+                if(inst->isLoad()){
+                    iewStats.lin_lqFullEvents++;
+                } else {
+                    iewStats.lin_sqFullEvents++;
+                }
+            }
+
 
             // Set unblock to false. Special case where we are using
             // skidbuffer (unblocking) instructions but then we still
@@ -1059,6 +1081,12 @@ IEW::dispatchInsts(ThreadID tid)
     if (!insts_to_dispatch.empty()) {
         DPRINTF(IEW,"[tid:%i] Issue: Bandwidth Full. Blocking.\n", tid);
         block(tid);
+
+        if (dispatchStatus[tid] != Blocked &&
+        dispatchStatus[tid] != Unblocking) {
+            iewStats.lin_Issue_Bandwidth_Full++;
+        }
+
         toRename->iewUnblock[tid] = false;
     }
 

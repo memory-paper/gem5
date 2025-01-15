@@ -449,6 +449,13 @@ class IEW
         statistics::Scalar predictedNotTakenIncorrect;
         /** Stat for total number of mispredicted branches detected at
          *  execute. */
+        // lin
+        statistics::Scalar lin_Issue_Bandwidth_Full;     
+        statistics::Scalar lin_lqFullEvents;     
+        statistics::Scalar lin_sqFullEvents;     
+        statistics::Scalar lin_iqFullEvents;     
+        statistics::Scalar lin_commit_robSqualsh;     
+
         statistics::Formula branchMispredicts;
 
         struct ExecutedInstStats : public statistics::Group
@@ -474,6 +481,10 @@ class IEW
         statistics::Formula wbRate;
         /** Average number of woken instructions per writeback. */
         statistics::Formula wbFanout;
+
+
+
+
     } iewStats;
 };
 
