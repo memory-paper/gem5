@@ -106,6 +106,7 @@ CPU::CPU(const BaseO3CPUParams &params)
       fetchQueue(params.backComSize, params.forwardComSize),
       decodeQueue(params.backComSize, params.forwardComSize),
       renameQueue(params.backComSize, params.forwardComSize),
+      renameQueue_lin(params.backComSize, params.forwardComSize),
       iewQueue(params.backComSize, params.forwardComSize),
       activityRec(name(), NumStages,
                   params.backComSize + params.forwardComSize,
@@ -168,6 +169,8 @@ CPU::CPU(const BaseO3CPUParams &params)
     decode.setDecodeQueue(&decodeQueue);
     rename.setDecodeQueue(&decodeQueue);
     rename.setRenameQueue(&renameQueue);
+    rename.setRenameQueue_lin(&renameQueue_lin);
+    iew.setRenameQueue_lin(&renameQueue_lin);
     iew.setRenameQueue(&renameQueue);
     iew.setIEWQueue(&iewQueue);
     commit.setIEWQueue(&iewQueue);
@@ -388,6 +391,7 @@ CPU::tick()
     fetchQueue.advance();
     decodeQueue.advance();
     renameQueue.advance();
+    renameQueue_lin.advance();
     iewQueue.advance();
 
     activityRec.advance();
@@ -657,6 +661,7 @@ CPU::removeThread(ThreadID tid)
         fetchQueue.advance();
         decodeQueue.advance();
         renameQueue.advance();
+        renameQueue_lin.advance();
         iewQueue.advance();
     }
 
@@ -777,6 +782,7 @@ CPU::drain()
             fetchQueue.advance();
             decodeQueue.advance();
             renameQueue.advance();
+            renameQueue_lin.advance();
             iewQueue.advance();
         }
 

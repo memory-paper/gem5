@@ -502,6 +502,7 @@ class InstructionQueue
         /** Stat for number of squashed instructions that were ready to
          *  issue. */
         statistics::Scalar squashedInstsIssued;
+        statistics::Scalar squashedInstsIssued_lin;
         /** Stat for number of squashed instructions examined when
          *  squashing. */
         statistics::Scalar squashedInstsExamined;
@@ -530,6 +531,9 @@ class InstructionQueue
          * FU was busy.
          */
         statistics::Vector statFuBusy;
+        statistics::Vector statNoCapableFU_lin; // 按操作类统计
+        statistics::Scalar statNoReadyInsts_lin;
+        statistics::Scalar cyclesWidthLimited_lin;  //发射宽度限制
         // statistics::Vector dist_unissued;
         /** Stat for total number issued for each instruction type. */
         statistics::Vector2d statIssuedInstType;

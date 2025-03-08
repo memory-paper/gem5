@@ -197,6 +197,8 @@ InstructionQueue::IQStats::IQStats(CPU *cpu, const unsigned &total_width)
              "Number of miscellaneous instructions issued"),
     ADD_STAT(squashedInstsIssued, statistics::units::Count::get(),
              "Number of squashed instructions issued"),
+    ADD_STAT(squashedInstsIssued_lin, statistics::units::Count::get(),
+             "lin"),
     ADD_STAT(squashedInstsExamined, statistics::units::Count::get(),
              "Number of squashed instructions iterated over during squash; "
              "mainly for profiling"),
@@ -205,10 +207,16 @@ InstructionQueue::IQStats::IQStats(CPU *cpu, const unsigned &total_width)
              "removed from graph"),
     ADD_STAT(squashedNonSpecRemoved, statistics::units::Count::get(),
              "Number of squashed non-spec instructions that were removed"),
+    ADD_STAT(statNoReadyInsts_lin, statistics::units::Count::get(),
+             "statNoReadyInsts_lin"),
+    ADD_STAT(cyclesWidthLimited_lin, statistics::units::Count::get(),
+             "cyclesWidthLimited_lin"),
     ADD_STAT(numIssuedDist, statistics::units::Count::get(),
              "Number of insts issued each cycle"),
     ADD_STAT(statFuBusy, statistics::units::Count::get(),
              "attempts to use FU when none available"),
+    ADD_STAT(statNoCapableFU_lin, statistics::units::Count::get(),
+             "statNoCapableFU_lin"),
     ADD_STAT(statIssuedInstType, statistics::units::Count::get(),
              "Number of instructions issued per FU type, per thread"),
     ADD_STAT(issueRate, statistics::units::Rate<
@@ -245,6 +253,8 @@ InstructionQueue::IQStats::IQStats(CPU *cpu, const unsigned &total_width)
 
     squashedInstsIssued
         .prereq(squashedInstsIssued);
+    squashedInstsIssued_lin
+        .prereq(squashedInstsIssued_lin);
 
     squashedInstsExamined
         .prereq(squashedInstsExamined);
@@ -254,6 +264,10 @@ InstructionQueue::IQStats::IQStats(CPU *cpu, const unsigned &total_width)
 
     squashedNonSpecRemoved
         .prereq(squashedNonSpecRemoved);
+        statNoReadyInsts_lin
+        .prereq(statNoReadyInsts_lin);
+        cyclesWidthLimited_lin
+        .prereq(cyclesWidthLimited_lin);
 /*
     queueResDist
         .init(Num_OpClasses, 0, 99, 2)
@@ -312,6 +326,14 @@ InstructionQueue::IQStats::IQStats(CPU *cpu, const unsigned &total_width)
         ;
     for (int i=0; i < Num_OpClasses; ++i) {
         statFuBusy.subname(i, enums::OpClassStrings[i]);
+    }
+
+    statNoCapableFU_lin
+        .init(Num_OpClasses)
+        .flags(statistics::pdf | statistics::dist)
+        ;
+    for (int i=0; i < Num_OpClasses; ++i) {
+        statNoCapableFU_lin.subname(i, enums::OpClassStrings[i]);
     }
 
     fuBusy
@@ -808,6 +830,7 @@ InstructionQueue::scheduleReadyInsts()
             listOrder.erase(order_it++);
 
             ++iqStats.squashedInstsIssued;
+            ++iqStats.squashedInstsIssued_lin;
 
             continue;
         }
@@ -818,6 +841,9 @@ InstructionQueue::scheduleReadyInsts()
 
         if (op_class != No_OpClass) {
             idx = fuPool->getUnit(op_class);
+            if (idx == FUPool::NoCapableFU) {
+                iqStats.statNoCapableFU_lin[op_class]++;
+            }            
             if (issuing_inst->isFloating()) {
                 iqIOStats.fpAluAccesses++;
             } else if (issuing_inst->isVector()) {
@@ -906,12 +932,18 @@ InstructionQueue::scheduleReadyInsts()
 
     iqStats.numIssuedDist.sample(total_issued);
     iqStats.instsIssued+= total_issued;
-    
 
     // If we issued any instructions, tell the CPU we had activity.
     // @todo If the way deferred memory instructions are handeled due to
     // translation changes then the deferredMemInsts condition should be
     // removed from the code below.
+    if (total_issued < totalWidth && order_it == order_end_it) {
+        iqStats.statNoReadyInsts_lin++;
+    }    
+
+    if (total_issued == totalWidth && order_it != order_end_it) {
+        iqStats.cyclesWidthLimited_lin++;
+    }
     if (total_issued || !retryMemInsts.empty() || !deferredMemInsts.empty()) {
         cpu->activityThisCycle();
     } else {
