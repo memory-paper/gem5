@@ -156,6 +156,9 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
       ADD_STAT(lin_insts_skid_buff, statistics::units::Count::get(),
                "count of skidbuff inst empty"),
 
+      ADD_STAT(testtimebuffrename, statistics::units::Count::get(),
+               "testtimebuffrename"),
+
       ADD_STAT(lin_serialize, statistics::units::Count::get(),
                "count of serialize"),
       ADD_STAT(lin_rename_stall, statistics::units::Count::get(),
@@ -193,6 +196,9 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
     LQFullEvents.prereq(LQFullEvents);
     SQFullEvents.prereq(SQFullEvents);
     fullRegistersEvents.prereq(fullRegistersEvents);
+
+
+    testtimebuffrename.prereq(testtimebuffrename);
 
     lin_serialize.prereq(lin_instEmpty);
     lin_serialize.prereq(lin_skidBufferInstEmpty);
@@ -271,6 +277,15 @@ Rename::setRenameQueue(TimeBuffer<RenameStruct> *rq_ptr)
 
     // Setup wire to write information to future stages.
     toIEW = renameQueue->getWire(0);
+}
+
+void
+Rename::setRenameQueue_lin(TimeBuffer<PMUdata> *rq_ptr)
+{
+    renameQueue_lin = rq_ptr;
+
+    // Setup wire to write information to future stages.
+    toIEW_lin = renameQueue_lin->getWire(0);
 }
 
 void
@@ -832,6 +847,11 @@ Rename::renameInsts(ThreadID tid)
         block(tid);
         toDecode->renameUnblock[tid] = false;
         ++stats.brename_any_mop_vld_ren_dec_stall_rr;
+        toIEW_lin->flag = 1;
+    }
+    if(toIEW_lin->flag)
+    {
+        ++stats.testtimebuffrename; 
     }
 }
 

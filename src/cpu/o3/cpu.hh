@@ -472,6 +472,7 @@ class CPU : public BaseCPU
 
     /** The rename stage's instruction queue. */
     TimeBuffer<RenameStruct> renameQueue;
+    TimeBuffer<PMUdata> renameQueue_lin;
 
     /** The IEW stage's instruction queue. */
     TimeBuffer<IEWStruct> iewQueue;

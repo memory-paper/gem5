@@ -83,6 +83,12 @@ struct RenameStruct
 
     DynInstPtr insts[MaxWidth];
 };
+struct PMUdata
+{
+    int size;
+
+    int flag;
+};
 
 /** Struct that defines the information passed from IEW to commit. */
 struct IEWStruct

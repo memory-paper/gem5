@@ -174,9 +174,11 @@ IEW::IEWStats::IEWStats(CPU *cpu)
     ADD_STAT(branchMispredicts, statistics::units::Count::get(),
              "Number of branch mispredicts detected at execute",
              predictedTakenIncorrect + predictedNotTakenIncorrect),
-
+    // test
+    ADD_STAT(testtimebuff, statistics::units::Cycle::get(),
+    "Number of cycles IEW is testtimebuff"),
     // lin
-    ADD_STAT(lin_Issue_Bandwidth_Full, statistics::units::Count::get(),
+    ADD_STAT(lin_Issue_dispatch_Full, statistics::units::Count::get(),
              "Number of branch mispredicts detected at execute"),
     ADD_STAT(lin_lqFullEvents, statistics::units::Count::get(),
              "Number of branch mispredicts detected at execute"),
@@ -297,6 +299,14 @@ IEW::setRenameQueue(TimeBuffer<RenameStruct> *rq_ptr)
 
     // Setup wire to read information from rename queue.
     fromRename = renameQueue->getWire(-renameToIEWDelay);
+}
+void
+IEW::setRenameQueue_lin(TimeBuffer<PMUdata> *rq_ptr)
+{
+    renameQueue_lin = rq_ptr;
+
+    // Setup wire to read information from rename queue.
+    fromRename_lin = renameQueue_lin->getWire(-renameToIEWDelay);
 }
 
 void
@@ -673,6 +683,9 @@ IEW::checkStall(ThreadID tid)
         iewStats.lin_iqFullEvents++;
         ret_val = true;
     }
+    if(fromRename_lin->flag){
+        ++iewStats.testtimebuff;
+    }
 
     return ret_val;
 }
@@ -843,6 +856,7 @@ IEW::dispatch(ThreadID tid)
             // reprocessed when this stage unblocks.
             skidInsert(tid);
         }
+
 
         unblock(tid);
     }
@@ -1084,7 +1098,7 @@ IEW::dispatchInsts(ThreadID tid)
 
         if (dispatchStatus[tid] != Blocked &&
         dispatchStatus[tid] != Unblocking) {
-            iewStats.lin_Issue_Bandwidth_Full++;
+            iewStats.lin_Issue_dispatch_Full++;
         }
 
         toRename->iewUnblock[tid] = false;

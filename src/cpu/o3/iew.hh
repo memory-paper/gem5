@@ -146,6 +146,8 @@ class IEW
 
     /** Sets time buffer for getting instructions coming from rename. */
     void setRenameQueue(TimeBuffer<RenameStruct> *rq_ptr);
+    /** Sets time buffer for getting instructions coming from rename. */
+    void setRenameQueue_lin(TimeBuffer<PMUdata> *rq_ptr);
 
     /** Sets time buffer to pass on instructions to commit. */
     void setIEWQueue(TimeBuffer<IEWStruct> *iq_ptr);
@@ -310,7 +312,8 @@ class IEW
 
     /** Rename instruction queue interface. */
     TimeBuffer<RenameStruct> *renameQueue;
-
+    TimeBuffer<PMUdata> *renameQueue_lin;
+    TimeBuffer<PMUdata>::wire fromRename_lin;
     /** Wire to get rename's output from rename queue. */
     TimeBuffer<RenameStruct>::wire fromRename;
 
@@ -449,8 +452,10 @@ class IEW
         statistics::Scalar predictedNotTakenIncorrect;
         /** Stat for total number of mispredicted branches detected at
          *  execute. */
+        // test
+        statistics::Scalar testtimebuff;     
         // lin
-        statistics::Scalar lin_Issue_Bandwidth_Full;     
+        statistics::Scalar lin_Issue_dispatch_Full;     
         statistics::Scalar lin_lqFullEvents;     
         statistics::Scalar lin_sqFullEvents;     
         statistics::Scalar lin_iqFullEvents;     

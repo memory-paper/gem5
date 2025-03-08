@@ -138,6 +138,7 @@ class Rename
 
     /** Sets pointer to time buffer used to communicate to the next stage. */
     void setRenameQueue(TimeBuffer<RenameStruct> *rq_ptr);
+    void setRenameQueue_lin(TimeBuffer<PMUdata> *rq_ptr);
 
     /** Sets pointer to time buffer coming from decode. */
     void setDecodeQueue(TimeBuffer<DecodeStruct> *dq_ptr);
@@ -337,9 +338,11 @@ class Rename
 
     /** Rename instruction queue. */
     TimeBuffer<RenameStruct> *renameQueue;
+    TimeBuffer<PMUdata> *renameQueue_lin;
 
     /** Wire to write any information heading to IEW. */
     TimeBuffer<RenameStruct>::wire toIEW;
+    TimeBuffer<PMUdata>::wire toIEW_lin;
 
     /** Decode instruction queue interface. */
     TimeBuffer<DecodeStruct> *decodeQueue;
@@ -547,6 +550,9 @@ class Rename
         statistics::Scalar lin_insts_skid_buff;
 
         
+
+
+        statistics::Scalar testtimebuffrename;
 
 
         statistics::Scalar brename_any_mop_vld_ren_dec_stall_rr;
