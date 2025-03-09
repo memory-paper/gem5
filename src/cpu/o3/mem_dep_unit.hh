@@ -161,6 +161,8 @@ class MemDepUnit
     /** Debugging function to dump the lists of instructions. */
     void dumpLists();
 
+    int count_rdy_lin = 0;
+
   private:
 
     /** Completes a memory instruction. */

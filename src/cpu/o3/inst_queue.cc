@@ -264,10 +264,11 @@ InstructionQueue::IQStats::IQStats(CPU *cpu, const unsigned &total_width)
 
     squashedNonSpecRemoved
         .prereq(squashedNonSpecRemoved);
-        statNoReadyInsts_lin
-        .prereq(statNoReadyInsts_lin);
-        cyclesWidthLimited_lin
-        .prereq(cyclesWidthLimited_lin);
+    statNoReadyInsts_lin
+    .prereq(statNoReadyInsts_lin);
+    cyclesWidthLimited_lin
+    .prereq(cyclesWidthLimited_lin);
+
 /*
     queueResDist
         .init(Num_OpClasses, 0, 99, 2)
@@ -371,6 +372,8 @@ InstructionQueue::IQIOStats::IQIOStats(statistics::Group *parent)
              "Number of integer alu accesses"),
     ADD_STAT(fpAluAccesses, statistics::units::Count::get(),
              "Number of floating point alu accesses"),
+
+    
     ADD_STAT(vecAluAccesses, statistics::units::Count::get(),
              "Number of vector alu accesses")
 {
@@ -407,6 +410,8 @@ InstructionQueue::IQIOStats::IQIOStats(statistics::Group *parent)
 
     fpAluAccesses
         .flags(total);
+
+
 
     vecAluAccesses
         .flags(total);
@@ -615,6 +620,8 @@ InstructionQueue::insert(const DynInstPtr &new_inst)
 
     if (new_inst->isMemRef()) {
         memDepUnit[new_inst->threadNumber].insert(new_inst);
+        memDepUnit[new_inst->threadNumber].count_rdy_lin++;
+
     } else {
         addIfReady(new_inst);
     }
@@ -625,6 +632,8 @@ InstructionQueue::insert(const DynInstPtr &new_inst)
 
     assert(freeEntries == (numEntries - countInsts()));
 }
+
+
 
 void
 InstructionQueue::insertNonSpec(const DynInstPtr &new_inst)
@@ -663,6 +672,7 @@ InstructionQueue::insertNonSpec(const DynInstPtr &new_inst)
     // unit.
     if (new_inst->isMemRef()) {
         memDepUnit[new_inst->threadNumber].insertNonSpec(new_inst);
+        memDepUnit[new_inst->threadNumber].count_rdy_lin++;
     }
 
     ++iqStats.nonSpecInstsAdded;
@@ -919,6 +929,7 @@ InstructionQueue::scheduleReadyInsts()
                 issuing_inst->clearInIQ();
             } else {
                 memDepUnit[tid].issue(issuing_inst);
+                memDepUnit[tid].count_rdy_lin--;
             }
 
             listOrder.erase(order_it++);
@@ -971,6 +982,7 @@ InstructionQueue::scheduleNonSpec(const InstSeqNum &inst)
         addIfReady((*inst_it).second);
     } else {
         memDepUnit[tid].nonSpecInstReady((*inst_it).second);
+        memDepUnit[tid].count_rdy_lin++;
     }
 
     (*inst_it).second = NULL;

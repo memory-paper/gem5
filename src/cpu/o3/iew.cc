@@ -187,6 +187,68 @@ IEW::IEWStats::IEWStats(CPU *cpu)
     ADD_STAT(lin_commit_robSqualsh, statistics::units::Count::get(),
              "Number of branch mispredicts detected at execute"),
 
+    ADD_STAT(lqfullrdyentry14_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry13_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry12_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry11_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry10_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry9_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry8_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry7_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry6_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry5_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry4_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry3_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry2_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry1_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(lqfullrdyentry0_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+
+    ADD_STAT(sqfullrdyentry14_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry13_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry12_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry11_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry10_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry9_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry8_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry7_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry6_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry5_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry4_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry3_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry2_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry1_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+    ADD_STAT(sqfullrdyentry0_lin, statistics::units::Count::get(),
+    "lqfullrdyentry14_lin"),
+
     executedInstStats(cpu),
     ADD_STAT(instsToCommit, statistics::units::Count::get(),
              "Cumulative count of insts sent to commit"),
@@ -876,9 +938,117 @@ IEW::dispatchInsts(ThreadID tid)
     DynInstPtr inst;
     bool add_to_iq = false;
     int dis_num_inst = 0;
+    int count_lq = 0;
+    int count_sq = 0;
+
 
     // Loop through the instructions, putting them in the instruction
     // queue.
+    for ( ; dis_num_inst < insts_to_add &&
+        dis_num_inst < dispatchWidth;
+    ++dis_num_inst)
+    {
+        inst = insts_to_dispatch.front();
+        if ((inst->isLoad() && ldstQueue.lqFull(tid))){
+            count_lq++;
+        }
+        if((inst->isStore() && ldstQueue.sqFull(tid))){
+            count_sq++;
+        }
+    }
+    if(count_lq == 14){
+        iewStats.lqfullrdyentry14_lin++;
+    }
+    if(count_lq == 13){
+        iewStats.lqfullrdyentry13_lin++;
+    }
+    if(count_lq == 12){
+        iewStats.lqfullrdyentry12_lin++;
+    }
+    if(count_lq == 11){
+        iewStats.lqfullrdyentry11_lin++;
+    }
+    if(count_lq == 10){
+        iewStats.lqfullrdyentry10_lin++;
+    }
+    if(count_lq == 9){
+        iewStats.lqfullrdyentry9_lin++;
+    }
+    if(count_lq == 8){
+        iewStats.lqfullrdyentry8_lin++;
+    }
+    if(count_lq == 7){
+        iewStats.lqfullrdyentry7_lin++;
+    }
+    if(count_lq == 6){
+        iewStats.lqfullrdyentry6_lin++;
+    }
+    if(count_lq == 5){
+        iewStats.lqfullrdyentry5_lin++;
+    }
+    if(count_lq == 4){
+        iewStats.lqfullrdyentry4_lin++;
+    }
+    if(count_lq == 3){
+        iewStats.lqfullrdyentry3_lin++;
+    }
+    if(count_lq == 2){
+        iewStats.lqfullrdyentry2_lin++;
+    }
+    if(count_lq == 1){
+        iewStats.lqfullrdyentry1_lin++;
+    }
+    if(count_lq == 0){
+        iewStats.lqfullrdyentry0_lin++;
+    }
+    if(count_sq == 14){
+        iewStats.sqfullrdyentry14_lin++;
+    }
+    if(count_sq == 13){
+        iewStats.sqfullrdyentry13_lin++;
+    }
+    if(count_sq == 12){
+        iewStats.sqfullrdyentry12_lin++;
+    }
+    if(count_sq == 11){
+        iewStats.sqfullrdyentry11_lin++;
+    }
+    if(count_sq == 10){
+        iewStats.sqfullrdyentry10_lin++;
+    }
+    if(count_sq == 9){
+        iewStats.sqfullrdyentry9_lin++;
+    }
+    if(count_sq == 8){
+        iewStats.sqfullrdyentry8_lin++;
+    }
+    if(count_sq == 7){
+        iewStats.sqfullrdyentry7_lin++;
+    }
+    if(count_sq == 6){
+        iewStats.sqfullrdyentry6_lin++;
+    }
+    if(count_sq == 5){
+        iewStats.sqfullrdyentry5_lin++;
+    }
+    if(count_sq == 4){
+        iewStats.sqfullrdyentry4_lin++;
+    }
+    if(count_sq == 3){
+        iewStats.sqfullrdyentry3_lin++;
+    }
+    if(count_sq == 2){
+        iewStats.sqfullrdyentry2_lin++;
+    }
+    if(count_sq == 1){
+        iewStats.sqfullrdyentry1_lin++;
+    }
+    if(count_sq == 0){
+        iewStats.sqfullrdyentry0_lin++;
+    }
+    
+
+    dis_num_inst = 0;
     for ( ; dis_num_inst < insts_to_add &&
               dis_num_inst < dispatchWidth;
           ++dis_num_inst)

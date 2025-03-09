@@ -177,6 +177,9 @@ class IEW
      * rescheduled. It will re-execute once replayMemInst() is called.
      */
     void rescheduleMemInst(const DynInstPtr &inst);
+  
+
+    void MemInstFullrdy_lin(const DynInstPtr &inst,ThreadID tid);  
 
     /** Re-executes all rescheduled memory instructions. */
     void replayMemInst(const DynInstPtr &inst);
@@ -459,7 +462,38 @@ class IEW
         statistics::Scalar lin_lqFullEvents;     
         statistics::Scalar lin_sqFullEvents;     
         statistics::Scalar lin_iqFullEvents;     
-        statistics::Scalar lin_commit_robSqualsh;     
+        statistics::Scalar lin_commit_robSqualsh;
+
+        statistics::Scalar lqfullrdyentry14_lin;     
+        statistics::Scalar lqfullrdyentry13_lin;     
+        statistics::Scalar lqfullrdyentry12_lin;     
+        statistics::Scalar lqfullrdyentry11_lin;     
+        statistics::Scalar lqfullrdyentry10_lin;     
+        statistics::Scalar lqfullrdyentry9_lin;     
+        statistics::Scalar lqfullrdyentry8_lin;     
+        statistics::Scalar lqfullrdyentry7_lin;     
+        statistics::Scalar lqfullrdyentry6_lin;     
+        statistics::Scalar lqfullrdyentry5_lin;     
+        statistics::Scalar lqfullrdyentry4_lin;     
+        statistics::Scalar lqfullrdyentry3_lin;     
+        statistics::Scalar lqfullrdyentry2_lin;     
+        statistics::Scalar lqfullrdyentry1_lin;     
+        statistics::Scalar lqfullrdyentry0_lin;     
+        statistics::Scalar sqfullrdyentry14_lin;     
+        statistics::Scalar sqfullrdyentry13_lin;     
+        statistics::Scalar sqfullrdyentry12_lin;     
+        statistics::Scalar sqfullrdyentry11_lin;     
+        statistics::Scalar sqfullrdyentry10_lin;     
+        statistics::Scalar sqfullrdyentry9_lin;     
+        statistics::Scalar sqfullrdyentry8_lin;     
+        statistics::Scalar sqfullrdyentry7_lin;     
+        statistics::Scalar sqfullrdyentry6_lin;     
+        statistics::Scalar sqfullrdyentry5_lin;     
+        statistics::Scalar sqfullrdyentry4_lin;     
+        statistics::Scalar sqfullrdyentry3_lin;     
+        statistics::Scalar sqfullrdyentry2_lin;     
+        statistics::Scalar sqfullrdyentry1_lin;     
+        statistics::Scalar sqfullrdyentry0_lin;      
 
         statistics::Formula branchMispredicts;
 
