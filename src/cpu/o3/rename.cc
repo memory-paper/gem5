@@ -147,6 +147,33 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
       ADD_STAT(skidInsts, statistics::units::Count::get(),
                "count of insts added to the skid buffer"),
       // lin
+      ADD_STAT(rename_12_mop_lin, statistics::units::Count::get(),
+               "rename_12_mop_lin"),
+      ADD_STAT(rename_11_mop_lin, statistics::units::Count::get(),
+               "rename_11_mop_lin"),
+      ADD_STAT(rename_10_mop_lin, statistics::units::Count::get(),
+               "rename_10_mop_lin"),
+      ADD_STAT(rename_9_mop_lin, statistics::units::Count::get(),
+               "rename_9_mop_lin"),
+      ADD_STAT(rename_8_mop_lin, statistics::units::Count::get(),
+               "rename_8_mop_lin"),
+      ADD_STAT(rename_7_mop_lin, statistics::units::Count::get(),
+               "rename_7_mop_lin"),
+      ADD_STAT(rename_6_mop_lin, statistics::units::Count::get(),
+               "rename_6_mop_lin"),
+      ADD_STAT(rename_5_mop_lin, statistics::units::Count::get(),
+               "rename_5_mop_lin"),
+      ADD_STAT(rename_4_mop_lin, statistics::units::Count::get(),
+               "rename_4_mop_lin"),
+      ADD_STAT(rename_3_mop_lin, statistics::units::Count::get(),
+               "rename_3_mop_lin"),
+      ADD_STAT(rename_2_mop_lin, statistics::units::Count::get(),
+               "rename_2_mop_lin"),
+      ADD_STAT(rename_1_mop_lin, statistics::units::Count::get(),
+               "rename_1_mop_lin"),
+      ADD_STAT(rename_0_mop_lin, statistics::units::Count::get(),
+               "rename_0_mop_lin"),
+
       ADD_STAT(lin_instEmpty, statistics::units::Count::get(),
                "count of skidbuff inst empty"),
       ADD_STAT(lin_skidBufferInstEmpty, statistics::units::Count::get(),
@@ -200,21 +227,34 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
 
     testtimebuffrename.prereq(testtimebuffrename);
 
-    lin_serialize.prereq(lin_instEmpty);
-    lin_serialize.prereq(lin_skidBufferInstEmpty);
-    lin_serialize.prereq(lin_insts_from_decode);
-    lin_serialize.prereq(lin_insts_skid_buff);
+    rename_12_mop_lin.prereq(rename_12_mop_lin);
+    rename_11_mop_lin.prereq(rename_11_mop_lin);
+    rename_10_mop_lin.prereq(rename_10_mop_lin);
+    rename_9_mop_lin.prereq(rename_9_mop_lin);
+    rename_8_mop_lin.prereq(rename_8_mop_lin);
+    rename_7_mop_lin.prereq(rename_7_mop_lin);
+    rename_6_mop_lin.prereq(rename_6_mop_lin);
+    rename_5_mop_lin.prereq(rename_5_mop_lin);
+    rename_4_mop_lin.prereq(rename_4_mop_lin);
+    rename_3_mop_lin.prereq(rename_3_mop_lin);
+    rename_2_mop_lin.prereq(rename_2_mop_lin);
+    rename_1_mop_lin.prereq(rename_1_mop_lin);
+    rename_0_mop_lin.prereq(rename_0_mop_lin);
+
+    lin_instEmpty.prereq(lin_instEmpty);
+    lin_skidBufferInstEmpty.prereq(lin_skidBufferInstEmpty);
+    lin_insts_from_decode.prereq(lin_insts_from_decode);
+    lin_insts_skid_buff.prereq(lin_insts_skid_buff);
 
     lin_serialize.prereq(lin_serialize);
-    lin_serialize.prereq(lin_rename_stall);
-    lin_serialize.prereq(lin_flush_stall);
+    lin_rename_stall.prereq(lin_rename_stall);
+    lin_flush_stall.prereq(lin_flush_stall);
     brename_any_mop_vld_ren_dec_stall_rr.prereq(brename_any_mop_vld_ren_dec_stall_rr);
     lin_insts_from_decode_empty.prereq(lin_insts_from_decode_empty);
     lin_no_free_entries.prereq(lin_no_free_entries);
     lin_no_enough_entries.prereq(lin_no_enough_entries);
     lin_fullRegistersEvents.prereq(lin_fullRegistersEvents);
     lin_serialize_stall.prereq(lin_serialize_stall);
-    lin_rename_stall.prereq(lin_rename_stall);
     lin_has_renameinsts.prereq(lin_has_renameinsts);
 
 
@@ -825,6 +865,42 @@ Rename::renameInsts(ThreadID tid)
 
         // Decrement how many instructions are available.
         --insts_available;
+    }
+    if (renamed_insts == 12 && fromIEW->dispatch_lin[12] == 1) {
+        ++stats.rename_12_mop_lin;
+    }
+    if (renamed_insts == 11 && fromIEW->dispatch_lin[11] == 1) {
+        ++stats.rename_11_mop_lin;
+    }
+    if (renamed_insts == 10 && fromIEW->dispatch_lin[10] == 1) {
+        ++stats.rename_10_mop_lin;
+    }
+    if (renamed_insts == 9 && fromIEW->dispatch_lin[9] == 1) {
+        ++stats.rename_9_mop_lin;
+    }
+    if (renamed_insts == 8 && fromIEW->dispatch_lin[8] == 1) {
+        ++stats.rename_8_mop_lin;
+    }
+    if (renamed_insts == 7 && fromIEW->dispatch_lin[7] == 1) {
+        ++stats.rename_7_mop_lin;
+    }
+    if (renamed_insts == 6 && fromIEW->dispatch_lin[6] == 1) {
+        ++stats.rename_6_mop_lin;
+    }
+    if (renamed_insts == 5 && fromIEW->dispatch_lin[5] == 1) {
+        ++stats.rename_5_mop_lin;
+    }
+    if (renamed_insts == 4 && fromIEW->dispatch_lin[4] == 1) {
+        ++stats.rename_4_mop_lin;
+    }
+    if (renamed_insts == 3 && fromIEW->dispatch_lin[3] == 1) {
+        ++stats.rename_3_mop_lin;
+    }
+    if (renamed_insts == 2 && fromIEW->dispatch_lin[2] == 1) {
+        ++stats.rename_2_mop_lin;
+    }
+    if (renamed_insts == 1 && fromIEW->dispatch_lin[1] == 1) {
+        ++stats.rename_1_mop_lin;
     }
 
 

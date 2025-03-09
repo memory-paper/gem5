@@ -230,6 +230,8 @@ struct TimeStruct
     bool iewBlock[MaxThreads];
     bool iewUnblock[MaxThreads];
 
+    int dispatch_lin[20] = {0};
+
     // lin
     
 };

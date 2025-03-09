@@ -570,6 +570,21 @@ class Rename
         statistics::Scalar lin_rename_stall_no_IQ;
         statistics::Scalar lin_rename_stall_no_LSQ;
         statistics::Scalar lin_rename_stall_Serialize_ROB_not_empty;
+
+        statistics::Scalar rename_12_mop_lin;
+        statistics::Scalar rename_11_mop_lin;
+        statistics::Scalar rename_10_mop_lin;
+        statistics::Scalar rename_9_mop_lin;
+        statistics::Scalar rename_8_mop_lin;
+        statistics::Scalar rename_7_mop_lin;
+        statistics::Scalar rename_6_mop_lin;
+        statistics::Scalar rename_5_mop_lin;
+        statistics::Scalar rename_4_mop_lin;
+        statistics::Scalar rename_3_mop_lin;
+        statistics::Scalar rename_2_mop_lin;
+        statistics::Scalar rename_1_mop_lin;
+        statistics::Scalar rename_0_mop_lin;
+
     } stats;
 };
 
