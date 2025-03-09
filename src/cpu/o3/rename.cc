@@ -866,40 +866,40 @@ Rename::renameInsts(ThreadID tid)
         // Decrement how many instructions are available.
         --insts_available;
     }
-    if (renamed_insts == 12 && fromIEW->dispatch_lin[12] == 1) {
+    if (renamed_insts == 12 && fromDecode->decode_lin[12] == 1) {
         ++stats.rename_12_mop_lin;
     }
-    if (renamed_insts == 11 && fromIEW->dispatch_lin[11] == 1) {
+    if (renamed_insts == 11 && fromDecode->decode_lin[11] == 1) {
         ++stats.rename_11_mop_lin;
     }
-    if (renamed_insts == 10 && fromIEW->dispatch_lin[10] == 1) {
+    if (renamed_insts == 10 && fromDecode->decode_lin[10] == 1) {
         ++stats.rename_10_mop_lin;
     }
-    if (renamed_insts == 9 && fromIEW->dispatch_lin[9] == 1) {
+    if (renamed_insts == 9 && fromDecode->decode_lin[9] == 1) {
         ++stats.rename_9_mop_lin;
     }
-    if (renamed_insts == 8 && fromIEW->dispatch_lin[8] == 1) {
+    if (renamed_insts == 8 && fromDecode->decode_lin[8] == 1) {
         ++stats.rename_8_mop_lin;
     }
-    if (renamed_insts == 7 && fromIEW->dispatch_lin[7] == 1) {
+    if (renamed_insts == 7 && fromDecode->decode_lin[7] == 1) {
         ++stats.rename_7_mop_lin;
     }
-    if (renamed_insts == 6 && fromIEW->dispatch_lin[6] == 1) {
+    if (renamed_insts == 6 && fromDecode->decode_lin[6] == 1) {
         ++stats.rename_6_mop_lin;
     }
-    if (renamed_insts == 5 && fromIEW->dispatch_lin[5] == 1) {
+    if (renamed_insts == 5 && fromDecode->decode_lin[5] == 1) {
         ++stats.rename_5_mop_lin;
     }
-    if (renamed_insts == 4 && fromIEW->dispatch_lin[4] == 1) {
+    if (renamed_insts == 4 && fromDecode->decode_lin[4] == 1) {
         ++stats.rename_4_mop_lin;
     }
-    if (renamed_insts == 3 && fromIEW->dispatch_lin[3] == 1) {
+    if (renamed_insts == 3 && fromDecode->decode_lin[3] == 1) {
         ++stats.rename_3_mop_lin;
     }
-    if (renamed_insts == 2 && fromIEW->dispatch_lin[2] == 1) {
+    if (renamed_insts == 2 && fromDecode->decode_lin[2] == 1) {
         ++stats.rename_2_mop_lin;
     }
-    if (renamed_insts == 1 && fromIEW->dispatch_lin[1] == 1) {
+    if (renamed_insts == 1 && fromDecode->decode_lin[1] == 1) {
         ++stats.rename_1_mop_lin;
     }
 

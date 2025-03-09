@@ -1279,7 +1279,6 @@ IEW::dispatchInsts(ThreadID tid)
 
         updatedQueues = true;
     }
-    toRename->dispatch_lin[dis_num_inst] = 1;
     dis_num_inst = 0;
 }
 

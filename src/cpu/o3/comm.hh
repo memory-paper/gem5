@@ -72,7 +72,7 @@ struct FetchStruct
 struct DecodeStruct
 {
     int size;
-
+    int decode_lin[20] = {0};
     DynInstPtr insts[MaxWidth];
 };
 
