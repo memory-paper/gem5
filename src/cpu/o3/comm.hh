@@ -81,6 +81,7 @@ struct DecodeStruct
 struct RenameStruct
 {
     int size;
+    int Amoflag = 0;
 
     DynInstPtr insts[MaxWidth];
 };
@@ -234,6 +235,7 @@ struct TimeStruct
     int dispatch_lin[20] = {0};
 
     // lin
+    int Amoflag = 0;
     
 };
 

@@ -477,6 +477,8 @@ class Rename
         NONE
     };
 
+    int Amoflag = 0;
+
     /** Function used to increment the stat that corresponds to the source of
      * the stall.
      */

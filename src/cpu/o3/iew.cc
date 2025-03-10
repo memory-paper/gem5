@@ -773,7 +773,7 @@ IEW::checkSignalsAndUpdate(ThreadID tid)
     //     check if squashing is not high.  Switch to running this cycle.
 
     if (fromCommit->commitInfo[tid].squash) {
-        iewStats.Iew_squash_lin++;
+        if(fromRename->Amoflag == 1){iewStats.Iew_squash_lin++;}
         squash(tid);
 
         if (dispatchStatus[tid] == Blocked ||
@@ -962,104 +962,104 @@ IEW::dispatchInsts(ThreadID tid)
         inst = insts_to_dispatch.front();
         if ((inst->isLoad() && ldstQueue.lqFull(tid))){
             count_lq++;
-            iewStats.ren_mX_disp_stall_iq_full_ls_lin++;
+            if(fromRename->Amoflag == 1){iewStats.ren_mX_disp_stall_iq_full_ls_lin++;}
         }
         if((inst->isStore() && ldstQueue.sqFull(tid))){
             count_sq++;
-            iewStats.ren_mX_disp_stall_iq_full_sq_lin++;
+            if(fromRename->Amoflag == 1){iewStats.ren_mX_disp_stall_iq_full_sq_lin++;}
         }
         if((inst->isStore() && instQueue.isFull(tid))){
-            iewStats.ren_mX_disp_stall_iq_full_iq_lin++;
+            if(fromRename->Amoflag == 1){iewStats.ren_mX_disp_stall_iq_full_iq_lin++;}
         }
     }
-    if(count_lq == 14){
+    if(count_lq == 14 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry14_lin++;
     }
-    if(count_lq == 13){
+    if(count_lq == 13 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry13_lin++;
     }
-    if(count_lq == 12){
+    if(count_lq == 12 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry12_lin++;
     }
-    if(count_lq == 11){
+    if(count_lq == 11 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry11_lin++;
     }
-    if(count_lq == 10){
+    if(count_lq == 10 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry10_lin++;
     }
-    if(count_lq == 9){
+    if(count_lq == 9 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry9_lin++;
     }
-    if(count_lq == 8){
+    if(count_lq == 8 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry8_lin++;
     }
-    if(count_lq == 7){
+    if(count_lq == 7 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry7_lin++;
     }
-    if(count_lq == 6){
+    if(count_lq == 6 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry6_lin++;
     }
-    if(count_lq == 5){
+    if(count_lq == 5 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry5_lin++;
     }
-    if(count_lq == 4){
+    if(count_lq == 4 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry4_lin++;
     }
-    if(count_lq == 3){
+    if(count_lq == 3 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry3_lin++;
     }
-    if(count_lq == 2){
+    if(count_lq == 2 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry2_lin++;
     }
-    if(count_lq == 1){
+    if(count_lq == 1 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry1_lin++;
     }
-    if(count_lq == 0){
+    if(count_lq == 0 && fromRename->Amoflag == 1){
         iewStats.lqfullrdyentry0_lin++;
     }
-    if(count_sq == 14){
+    if(count_sq == 14 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry14_lin++;
     }
-    if(count_sq == 13){
+    if(count_sq == 13 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry13_lin++;
     }
-    if(count_sq == 12){
+    if(count_sq == 12 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry12_lin++;
     }
-    if(count_sq == 11){
+    if(count_sq == 11 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry11_lin++;
     }
-    if(count_sq == 10){
+    if(count_sq == 10 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry10_lin++;
     }
-    if(count_sq == 9){
+    if(count_sq == 9 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry9_lin++;
     }
-    if(count_sq == 8){
+    if(count_sq == 8 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry8_lin++;
     }
-    if(count_sq == 7){
+    if(count_sq == 7 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry7_lin++;
     }
-    if(count_sq == 6){
+    if(count_sq == 6 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry6_lin++;
     }
-    if(count_sq == 5){
+    if(count_sq == 5 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry5_lin++;
     }
-    if(count_sq == 4){
+    if(count_sq == 4 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry4_lin++;
     }
-    if(count_sq == 3){
+    if(count_sq == 3 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry3_lin++;
     }
-    if(count_sq == 2){
+    if(count_sq == 2 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry2_lin++;
     }
-    if(count_sq == 1){
+    if(count_sq == 1 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry1_lin++;
     }
-    if(count_sq == 0){
+    if(count_sq == 0 && fromRename->Amoflag == 1){
         iewStats.sqfullrdyentry0_lin++;
     }
     
@@ -1280,7 +1280,7 @@ IEW::dispatchInsts(ThreadID tid)
 
     if (!insts_to_dispatch.empty()) {
         DPRINTF(IEW,"[tid:%i] Issue: Bandwidth Full. Blocking.\n", tid);
-        iewStats.Issue_dispatch_bwstall_lin++;
+        if(fromRename->Amoflag == 1 ){iewStats.Issue_dispatch_bwstall_lin++;}
         block(tid);
         toRename->iewUnblock[tid] = false;
     }
