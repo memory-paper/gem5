@@ -186,6 +186,9 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
       ADD_STAT(testtimebuffrename, statistics::units::Count::get(),
                "testtimebuffrename"),
 
+      ADD_STAT(cqs_stall_lin, statistics::units::Count::get(),
+               "count of cqs_stall_lin"),
+
       ADD_STAT(lin_serialize, statistics::units::Count::get(),
                "count of serialize"),
       ADD_STAT(lin_rename_stall, statistics::units::Count::get(),
@@ -194,7 +197,7 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
                "count of serialize"),
       ADD_STAT(lin_insts_from_decode_empty, statistics::units::Count::get(),
                "count of rename_any_mop_vld & ~rename_any_update"),
-      ADD_STAT(lin_no_free_entries, statistics::units::Count::get(),
+      ADD_STAT(no_free_entries_lin, statistics::units::Count::get(),
                "count of rename_any_mop_vld & ~rename_any_update"),
       ADD_STAT(lin_no_enough_entries, statistics::units::Count::get(),
                "count of rename_any_mop_vld & ~rename_any_update"),
@@ -202,7 +205,9 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
                "count of rename_any_mop_vld & ~rename_any_update"),
       ADD_STAT(lin_serialize_stall, statistics::units::Count::get(),
                "count of rename_any_mop_vld & ~rename_any_update"),
-      ADD_STAT(lin_has_renameinsts, statistics::units::Count::get(),
+      ADD_STAT(has_renameinsts_lin, statistics::units::Count::get(),
+               "count of rename_any_mop_vld & ~rename_any_update"),
+      ADD_STAT(serialize_stall_lin, statistics::units::Count::get(),
                "count of rename_any_mop_vld & ~rename_any_update"),
       ADD_STAT(brename_any_mop_vld_ren_dec_stall_rr, statistics::units::Count::get(),
                "count of ~rename_any_mop_vld & ren_dec_stall_rr")
@@ -251,11 +256,14 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
     lin_flush_stall.prereq(lin_flush_stall);
     brename_any_mop_vld_ren_dec_stall_rr.prereq(brename_any_mop_vld_ren_dec_stall_rr);
     lin_insts_from_decode_empty.prereq(lin_insts_from_decode_empty);
-    lin_no_free_entries.prereq(lin_no_free_entries);
+    no_free_entries_lin.prereq(no_free_entries_lin);
     lin_no_enough_entries.prereq(lin_no_enough_entries);
     lin_fullRegistersEvents.prereq(lin_fullRegistersEvents);
     lin_serialize_stall.prereq(lin_serialize_stall);
-    lin_has_renameinsts.prereq(lin_has_renameinsts);
+    has_renameinsts_lin.prereq(has_renameinsts_lin);
+
+    serialize_stall_lin.prereq(serialize_stall_lin);
+    cqs_stall_lin.prereq(cqs_stall_lin);
 
 
 
@@ -264,11 +272,11 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
     rename_any_mop_vld_brename_any_update.prereq(rename_any_mop_vld_brename_any_update);
 
 
-    lin_rename_stall_from_iew.prereq(lin_rename_stall_from_iew);
-    lin_rename_stall_no_ROB.prereq(lin_rename_stall_no_ROB);
-    lin_rename_stall_no_IQ.prereq(lin_rename_stall_no_IQ);
-    lin_rename_stall_no_LSQ.prereq(lin_rename_stall_no_LSQ);
-    lin_rename_stall_Serialize_ROB_not_empty.prereq(lin_rename_stall_Serialize_ROB_not_empty);
+    hrename_stall_from_iew_lin.prereq(hrename_stall_from_iew_lin);
+    hrename_stall_no_ROB_lin.prereq(hrename_stall_no_ROB_lin);
+    hrename_stall_no_IQ_lin.prereq(hrename_stall_no_IQ_lin);
+    hrename_stall_no_LSQ_lin.prereq(hrename_stall_no_LSQ_lin);
+    hrename_stall_Serialize_ROB_not_empty_lin.prereq(hrename_stall_Serialize_ROB_not_empty_lin);
 
 
     renamedOperands.prereq(renamedOperands);
@@ -579,7 +587,10 @@ Rename::rename(bool &status_change, ThreadID tid)
     //     check if stall conditions have passed
 
     if (renameStatus[tid] == Blocked) {
-        ++stats.blockCycles;    
+        ++stats.blockCycles; 
+        if(fromDecode->decode_status_lin == 0){
+            ++stats.brename_any_mop_vld_ren_dec_stall_rr;
+        }   
     } else if (renameStatus[tid] == Squashing) {
         ++stats.squashCycles;
     } else if (renameStatus[tid] == SerializeStall) {
@@ -671,7 +682,7 @@ Rename::renameInsts(ThreadID tid)
                 tid, free_rob_entries, free_iq_entries);
 
         blockThisCycle = true;
-        stats.lin_no_free_entries++;
+        stats.no_free_entries_lin++;
 
         block(tid);
 
@@ -916,13 +927,12 @@ Rename::renameInsts(ThreadID tid)
     // If so then block.
     if (insts_available) {
         blockThisCycle = true;
-        stats.lin_has_renameinsts++;
+        stats.has_renameinsts_lin++;
     }
 
     if (blockThisCycle) {
         block(tid);
         toDecode->renameUnblock[tid] = false;
-        ++stats.brename_any_mop_vld_ren_dec_stall_rr;
         toIEW_lin->flag = 1;
     }
     if(toIEW_lin->flag)
@@ -1390,24 +1400,24 @@ Rename::checkStall(ThreadID tid)
     bool ret_val = false;
 
     if (stalls[tid].iew) {
-        stats.lin_rename_stall_from_iew++;
+        stats.hrename_stall_from_iew_lin++;
         DPRINTF(Rename,"[tid:%i] Stall from IEW stage detected.\n", tid);
         ret_val = true;
     } else if (calcFreeROBEntries(tid) <= 0) {
-        stats.lin_rename_stall_no_ROB++;
+        stats.hrename_stall_no_ROB_lin++;
         DPRINTF(Rename,"[tid:%i] Stall: ROB has 0 free entries.\n", tid);
         ret_val = true;
     } else if (calcFreeIQEntries(tid) <= 0) {
-        stats.lin_rename_stall_no_IQ++;
+        stats.hrename_stall_no_IQ_lin++;
         DPRINTF(Rename,"[tid:%i] Stall: IQ has 0 free entries.\n", tid);
         ret_val = true;
     } else if (calcFreeLQEntries(tid) <= 0 && calcFreeSQEntries(tid) <= 0) {
-        stats.lin_rename_stall_no_LSQ++;
+        stats.hrename_stall_no_LSQ_lin++;
         DPRINTF(Rename,"[tid:%i] Stall: LSQ has 0 free entries.\n", tid);
         ret_val = true;
     } else if (renameStatus[tid] == SerializeStall &&
                (!emptyROB[tid] || instsInProgress[tid])) {
-        stats.lin_rename_stall_Serialize_ROB_not_empty++;
+        stats.hrename_stall_Serialize_ROB_not_empty_lin++;
         DPRINTF(Rename,"[tid:%i] Stall: Serialize stall and ROB is not "
                 "empty.\n",
                 tid);
@@ -1473,7 +1483,7 @@ Rename::checkSignalsAndUpdate(ThreadID tid)
     if (fromCommit->commitInfo[tid].squash) {
         DPRINTF(Rename, "[tid:%i] Squashing instructions due to squash from "
                 "commit.\n", tid);
-
+        stats.cqs_stall_lin++;
         squash(fromCommit->commitInfo[tid].doneSeqNum, tid);
         return true;
     } else if (!fromCommit->commitInfo[tid].robSquashing &&
@@ -1514,6 +1524,7 @@ Rename::checkSignalsAndUpdate(ThreadID tid)
                     "[tid:%i] Done squashing, switching to serialize.\n", tid);
 
             renameStatus[tid] = SerializeStall;
+            stats.serialize_stall_lin++;
             return true;
         } else if (resumeUnblocking) {
             DPRINTF(Rename,

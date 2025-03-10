@@ -557,19 +557,22 @@ class Rename
 
         statistics::Scalar brename_any_mop_vld_ren_dec_stall_rr;
         statistics::Scalar lin_insts_from_decode_empty;
-        statistics::Scalar lin_no_free_entries;
+        statistics::Scalar no_free_entries_lin;
         statistics::Scalar lin_no_enough_entries;
         statistics::Scalar lin_fullRegistersEvents;
         statistics::Scalar lin_serialize_stall;
         statistics::Scalar lin_rename_stall;
-        statistics::Scalar lin_has_renameinsts;
+        statistics::Scalar has_renameinsts_lin;
+
+        statistics::Scalar cqs_stall_lin;        
+        statistics::Scalar serialize_stall_lin;        
 
         statistics::Scalar rename_any_mop_vld_brename_any_update;
-        statistics::Scalar lin_rename_stall_from_iew;
-        statistics::Scalar lin_rename_stall_no_ROB;
-        statistics::Scalar lin_rename_stall_no_IQ;
-        statistics::Scalar lin_rename_stall_no_LSQ;
-        statistics::Scalar lin_rename_stall_Serialize_ROB_not_empty;
+        statistics::Scalar hrename_stall_from_iew_lin;
+        statistics::Scalar hrename_stall_no_ROB_lin;
+        statistics::Scalar hrename_stall_no_IQ_lin;
+        statistics::Scalar hrename_stall_no_LSQ_lin;
+        statistics::Scalar hrename_stall_Serialize_ROB_not_empty_lin;
 
         statistics::Scalar rename_12_mop_lin;
         statistics::Scalar rename_11_mop_lin;

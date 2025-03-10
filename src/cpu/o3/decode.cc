@@ -645,7 +645,7 @@ Decode::decodeInsts(ThreadID tid)
         skidBuffer[tid] : insts[tid];
 
     DPRINTF(Decode, "[tid:%i] Sending instruction to rename.\n",tid);
-
+    int decode_inst_lin = 0;
     while (insts_available > 0 && toRenameIndex < decodeWidth) {
         assert(!insts_to_decode.empty());
 
@@ -685,6 +685,7 @@ Decode::decodeInsts(ThreadID tid)
         ++toRenameIndex;
         ++stats.decodedInsts;
         --insts_available;
+        decode_inst_lin++;
 
 #if TRACING_ON
         if (debug::O3PipeView) {
@@ -733,6 +734,8 @@ Decode::decodeInsts(ThreadID tid)
             }
         }
     }
+    toRename->decode_lin[decode_inst_lin] = 1;
+
 
     // If we didn't process all instructions, then we will need to block
     // and put all those instructions into the skid buffer.
@@ -744,6 +747,7 @@ Decode::decodeInsts(ThreadID tid)
     // tracking.
     if (toRenameIndex) {
         wroteToTimeBuffer = true;
+        toRename->decode_status_lin = 1;
     }
 }
 
