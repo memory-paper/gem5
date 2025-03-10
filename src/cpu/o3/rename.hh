@@ -542,7 +542,7 @@ class Rename
 
 
         // lin
-        statistics::Scalar lin_serialize;
+        statistics::Scalar serializeStall_lin;
         statistics::Scalar lin_flush_stall;
         statistics::Scalar lin_instEmpty;
         statistics::Scalar lin_skidBufferInstEmpty;
@@ -560,7 +560,7 @@ class Rename
         statistics::Scalar no_free_entries_lin;
         statistics::Scalar lin_no_enough_entries;
         statistics::Scalar lin_fullRegistersEvents;
-        statistics::Scalar lin_serialize_stall;
+        statistics::Scalar serializeStall_lin_stall;
         statistics::Scalar lin_rename_stall;
         statistics::Scalar has_renameinsts_lin;
 

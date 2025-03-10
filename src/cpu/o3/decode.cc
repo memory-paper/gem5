@@ -135,6 +135,8 @@ Decode::DecodeStats::DecodeStats(CPU *cpu)
                "Number of times decode resolved a branch"),
       ADD_STAT(branchMispred, statistics::units::Count::get(),
                "Number of times decode detected a branch misprediction"),
+      ADD_STAT(branchMispred_lin, statistics::units::Count::get(),
+               "Number of times decode detected a branch misprediction"),
       ADD_STAT(controlMispred, statistics::units::Count::get(),
                "Number of times decode detected an instruction incorrectly "
                "predicted as a control"),
@@ -150,6 +152,7 @@ Decode::DecodeStats::DecodeStats(CPU *cpu)
     squashCycles.prereq(squashCycles);
     branchResolved.prereq(branchResolved);
     branchMispred.prereq(branchMispred);
+    branchMispred_lin.prereq(branchMispred_lin);
     controlMispred.prereq(controlMispred);
     decodedInsts.prereq(decodedInsts);
     squashedInsts.prereq(squashedInsts);
@@ -499,7 +502,7 @@ Decode::checkSignalsAndUpdate(ThreadID tid)
 
     // Check squash signals from commit.
     if (fromCommit->commitInfo[tid].squash) {
-
+        stats.cmitMispred_lin++;
         DPRINTF(Decode, "[tid:%i] Squashing instructions due to squash "
                 "from commit.\n", tid);
 
@@ -718,6 +721,7 @@ Decode::decodeInsts(ThreadID tid)
             std::unique_ptr<PCStateBase> target = inst->branchTarget();
             if (*target != inst->readPredTarg()) {
                 ++stats.branchMispred;
+                ++stats.branchMispred_lin;
 
                 // Might want to set some sort of boolean and just do
                 // a check at the end

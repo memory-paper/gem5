@@ -458,6 +458,7 @@ class IEW
         // test
         statistics::Scalar testtimebuff;     
         // lin
+        statistics::Scalar Iew_squash_lin;     
         statistics::Scalar Issue_dispatch_bwstall_lin;     
         statistics::Scalar lin_lqFullEvents;     
         statistics::Scalar lin_sqFullEvents;     

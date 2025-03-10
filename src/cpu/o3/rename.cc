@@ -189,7 +189,7 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
       ADD_STAT(cqs_stall_lin, statistics::units::Count::get(),
                "count of cqs_stall_lin"),
 
-      ADD_STAT(lin_serialize, statistics::units::Count::get(),
+      ADD_STAT(serializeStall_lin, statistics::units::Count::get(),
                "count of serialize"),
       ADD_STAT(lin_rename_stall, statistics::units::Count::get(),
                "count of serialize"),
@@ -203,7 +203,7 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
                "count of rename_any_mop_vld & ~rename_any_update"),
       ADD_STAT(lin_fullRegistersEvents, statistics::units::Count::get(),
                "count of rename_any_mop_vld & ~rename_any_update"),
-      ADD_STAT(lin_serialize_stall, statistics::units::Count::get(),
+      ADD_STAT(serializeStall_lin_stall, statistics::units::Count::get(),
                "count of rename_any_mop_vld & ~rename_any_update"),
       ADD_STAT(has_renameinsts_lin, statistics::units::Count::get(),
                "count of rename_any_mop_vld & ~rename_any_update"),
@@ -251,7 +251,7 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
     lin_insts_from_decode.prereq(lin_insts_from_decode);
     lin_insts_skid_buff.prereq(lin_insts_skid_buff);
 
-    lin_serialize.prereq(lin_serialize);
+    serializeStall_lin.prereq(serializeStall_lin);
     lin_rename_stall.prereq(lin_rename_stall);
     lin_flush_stall.prereq(lin_flush_stall);
     brename_any_mop_vld_ren_dec_stall_rr.prereq(brename_any_mop_vld_ren_dec_stall_rr);
@@ -259,7 +259,7 @@ Rename::RenameStats::RenameStats(statistics::Group *parent)
     no_free_entries_lin.prereq(no_free_entries_lin);
     lin_no_enough_entries.prereq(lin_no_enough_entries);
     lin_fullRegistersEvents.prereq(lin_fullRegistersEvents);
-    lin_serialize_stall.prereq(lin_serialize_stall);
+    serializeStall_lin_stall.prereq(serializeStall_lin_stall);
     has_renameinsts_lin.prereq(has_renameinsts_lin);
 
     serialize_stall_lin.prereq(serialize_stall_lin);
@@ -598,7 +598,7 @@ Rename::rename(bool &status_change, ThreadID tid)
         // If we are currently in SerializeStall and resumeSerialize
         // was set, then that means that we are resuming serializing
         // this cycle.  Tell the previous stages to block.
-        ++stats.lin_serialize;
+        ++stats.serializeStall_lin;
         if (resumeSerialize) {
             resumeSerialize = false;
             block(tid);
@@ -838,7 +838,7 @@ Rename::renameInsts(ThreadID tid)
             serializeInst[tid] = inst;
 
             blockThisCycle = true;
-            stats.lin_serialize_stall++;
+            stats.serializeStall_lin_stall++;
 
             break;
         } else if ((inst->isStoreConditional() || inst->isSerializeAfter()) &&

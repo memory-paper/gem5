@@ -320,6 +320,9 @@ class Decode
         statistics::Scalar decodedInsts;
         /** Stat for total number of squashed instructions. */
         statistics::Scalar squashedInsts;
+
+        statistics::Scalar branchMispred_lin;
+        statistics::Scalar cmitMispred_lin;
     } stats;
 };
 

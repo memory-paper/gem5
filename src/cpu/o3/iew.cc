@@ -178,6 +178,8 @@ IEW::IEWStats::IEWStats(CPU *cpu)
     ADD_STAT(testtimebuff, statistics::units::Cycle::get(),
     "Number of cycles IEW is testtimebuff"),
     // lin
+    ADD_STAT(Iew_squash_lin, statistics::units::Count::get(),
+             "Number of Iew_squash_lin"),
     ADD_STAT(Issue_dispatch_bwstall_lin, statistics::units::Count::get(),
              "Number of branch mispredicts detected at execute"),
     ADD_STAT(lin_lqFullEvents, statistics::units::Count::get(),
@@ -771,6 +773,7 @@ IEW::checkSignalsAndUpdate(ThreadID tid)
     //     check if squashing is not high.  Switch to running this cycle.
 
     if (fromCommit->commitInfo[tid].squash) {
+        iewStats.Iew_squash_lin++;
         squash(tid);
 
         if (dispatchStatus[tid] == Blocked ||
