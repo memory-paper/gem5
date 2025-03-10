@@ -490,6 +490,20 @@ class Commit
 
         /** Number of cycles where the commit bandwidth limit is reached. */
         statistics::Scalar commitEligibleSamples;
+
+        statistics::Scalar commitBandwidthLimitReached_lin;
+        statistics::Scalar commit12_lin;
+        statistics::Scalar commit11_lin;
+        statistics::Scalar commit10_lin;
+        statistics::Scalar commit9_lin;
+        statistics::Scalar commit8_lin;
+        statistics::Scalar commit7_lin;
+        statistics::Scalar commit6_lin;
+        statistics::Scalar commit5_lin;
+        statistics::Scalar commit4_lin;
+        statistics::Scalar commit3_lin;
+        statistics::Scalar commit2_lin;
+        statistics::Scalar commit1_lin;
     } stats;
 };
 

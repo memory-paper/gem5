@@ -458,7 +458,7 @@ class IEW
         // test
         statistics::Scalar testtimebuff;     
         // lin
-        statistics::Scalar lin_Issue_dispatch_Full;     
+        statistics::Scalar Issue_dispatch_bwstall_lin;     
         statistics::Scalar lin_lqFullEvents;     
         statistics::Scalar lin_sqFullEvents;     
         statistics::Scalar lin_iqFullEvents;     
@@ -494,6 +494,10 @@ class IEW
         statistics::Scalar sqfullrdyentry2_lin;     
         statistics::Scalar sqfullrdyentry1_lin;     
         statistics::Scalar sqfullrdyentry0_lin;      
+
+        statistics::Scalar ren_mX_disp_stall_iq_full_ls_lin;      
+        statistics::Scalar ren_mX_disp_stall_iq_full_sq_lin;      
+        statistics::Scalar ren_mX_disp_stall_iq_full_iq_lin;      
 
         statistics::Formula branchMispredicts;
 

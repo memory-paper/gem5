@@ -164,6 +164,34 @@ Commit::CommitStats::CommitStats(CPU *cpu, Commit *commit)
                "Number of function calls committed."),
       ADD_STAT(committedInstType, statistics::units::Count::get(),
                "Class of committed instruction"),
+
+      ADD_STAT(commitBandwidthLimitReached_lin, statistics::units::Count::get(),
+              "Class of committed instruction"),
+      ADD_STAT(commit12_lin, statistics::units::Count::get(),
+              "Class of committed instruction"),
+      ADD_STAT(commit11_lin, statistics::units::Count::get(),
+              "Class of committed instruction"),
+      ADD_STAT(commit10_lin, statistics::units::Count::get(),
+              "Class of committed instruction"),
+      ADD_STAT(commit9_lin, statistics::units::Count::get(),
+              "Class of committed instruction"),
+      ADD_STAT(commit8_lin, statistics::units::Count::get(),
+            "Class of committed instruction"),
+      ADD_STAT(commit7_lin, statistics::units::Count::get(),
+              "Class of committed instruction"),
+      ADD_STAT(commit6_lin, statistics::units::Count::get(),
+              "Class of committed instruction"),
+      ADD_STAT(commit5_lin, statistics::units::Count::get(),
+              "Class of committed instruction"),
+      ADD_STAT(commit4_lin, statistics::units::Count::get(),
+              "Class of committed instruction"),
+      ADD_STAT(commit3_lin, statistics::units::Count::get(),
+              "Class of committed instruction"),
+      ADD_STAT(commit2_lin, statistics::units::Count::get(),
+            "Class of committed instruction"),
+      ADD_STAT(commit1_lin, statistics::units::Count::get(),
+            "Class of committed instruction"),
+
       ADD_STAT(commitEligibleSamples, statistics::units::Cycle::get(),
                "number cycles where commit BW limit reached")
 {
@@ -1091,6 +1119,43 @@ Commit::commitInsts()
 
     if (num_committed == commitWidth) {
         stats.commitEligibleSamples++;
+        stats.commitBandwidthLimitReached_lin++;
+    }
+    if(num_committed == 12){
+        stats.commit12_lin++;
+    }
+    if(num_committed == 11){
+        stats.commit11_lin++;
+    }
+    if(num_committed == 10){
+        stats.commit10_lin++;
+    }
+    if(num_committed == 9){
+        stats.commit9_lin++;
+    }
+    if(num_committed == 8){
+        stats.commit8_lin++;
+    }
+    if(num_committed == 7){
+        stats.commit7_lin++;
+    }
+    if(num_committed == 6){
+        stats.commit6_lin++;
+    }
+    if(num_committed == 5){
+        stats.commit5_lin++;
+    }
+    if(num_committed == 4){
+        stats.commit4_lin++;
+    }
+    if(num_committed == 3){
+        stats.commit3_lin++;
+    }
+    if(num_committed == 2){
+        stats.commit2_lin++;
+    }
+    if(num_committed == 1){
+        stats.commit1_lin++;
     }
 }
 

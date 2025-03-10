@@ -178,7 +178,7 @@ IEW::IEWStats::IEWStats(CPU *cpu)
     ADD_STAT(testtimebuff, statistics::units::Cycle::get(),
     "Number of cycles IEW is testtimebuff"),
     // lin
-    ADD_STAT(lin_Issue_dispatch_Full, statistics::units::Count::get(),
+    ADD_STAT(Issue_dispatch_bwstall_lin, statistics::units::Count::get(),
              "Number of branch mispredicts detected at execute"),
     ADD_STAT(lin_lqFullEvents, statistics::units::Count::get(),
              "Number of branch mispredicts detected at execute"),
@@ -248,6 +248,14 @@ IEW::IEWStats::IEWStats(CPU *cpu)
     "lqfullrdyentry14_lin"),
     ADD_STAT(sqfullrdyentry0_lin, statistics::units::Count::get(),
     "lqfullrdyentry14_lin"),
+
+
+    ADD_STAT(ren_mX_disp_stall_iq_full_ls_lin, statistics::units::Count::get(),
+    "ren_mX_disp_stall_iq_full_ls_lin"),
+    ADD_STAT(ren_mX_disp_stall_iq_full_sq_lin, statistics::units::Count::get(),
+    "ren_mX_disp_stall_iq_full_sq_lin"),
+    ADD_STAT(ren_mX_disp_stall_iq_full_iq_lin, statistics::units::Count::get(),
+    "ren_mX_disp_stall_iq_full_iq_lin"),
 
     executedInstStats(cpu),
     ADD_STAT(instsToCommit, statistics::units::Count::get(),
@@ -951,9 +959,14 @@ IEW::dispatchInsts(ThreadID tid)
         inst = insts_to_dispatch.front();
         if ((inst->isLoad() && ldstQueue.lqFull(tid))){
             count_lq++;
+            iewStats.ren_mX_disp_stall_iq_full_ls_lin++;
         }
         if((inst->isStore() && ldstQueue.sqFull(tid))){
             count_sq++;
+            iewStats.ren_mX_disp_stall_iq_full_sq_lin++;
+        }
+        if((inst->isStore() && instQueue.isFull(tid))){
+            iewStats.ren_mX_disp_stall_iq_full_iq_lin++;
         }
     }
     if(count_lq == 14){
@@ -1264,13 +1277,8 @@ IEW::dispatchInsts(ThreadID tid)
 
     if (!insts_to_dispatch.empty()) {
         DPRINTF(IEW,"[tid:%i] Issue: Bandwidth Full. Blocking.\n", tid);
+        iewStats.Issue_dispatch_bwstall_lin++;
         block(tid);
-
-        if (dispatchStatus[tid] != Blocked &&
-        dispatchStatus[tid] != Unblocking) {
-            iewStats.lin_Issue_dispatch_Full++;
-        }
-
         toRename->iewUnblock[tid] = false;
     }
 
