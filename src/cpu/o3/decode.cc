@@ -502,7 +502,7 @@ Decode::checkSignalsAndUpdate(ThreadID tid)
 
     // Check squash signals from commit.
     if (fromCommit->commitInfo[tid].squash) {
-        if(fromRename->Amoflag == 1){stats.cmitMispred_lin++;}
+        if(fromRename->Amoflag % 2){stats.cmitMispred_lin++;}
         DPRINTF(Decode, "[tid:%i] Squashing instructions due to squash "
                 "from commit.\n", tid);
 
@@ -688,7 +688,7 @@ Decode::decodeInsts(ThreadID tid)
         ++toRenameIndex;
         ++stats.decodedInsts;
         --insts_available;
-        if(fromRename->Amoflag == 1){decode_inst_lin++;}
+        if(fromRename->Amoflag % 2){decode_inst_lin++;}
 
 #if TRACING_ON
         if (debug::O3PipeView) {
@@ -721,7 +721,7 @@ Decode::decodeInsts(ThreadID tid)
             std::unique_ptr<PCStateBase> target = inst->branchTarget();
             if (*target != inst->readPredTarg()) {
                 ++stats.branchMispred;
-                if(fromRename->Amoflag == 1){++stats.branchMispred_lin;}
+                if(fromRename->Amoflag % 2){++stats.branchMispred_lin;}
 
                 // Might want to set some sort of boolean and just do
                 // a check at the end

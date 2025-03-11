@@ -588,7 +588,7 @@ Rename::rename(bool &status_change, ThreadID tid)
 
     if (renameStatus[tid] == Blocked) {
         ++stats.blockCycles; 
-        if(fromDecode->decode_status_lin == 0 && Amoflag == 1){
+        if(fromDecode->decode_status_lin == 0 && Amoflag % 2){
             ++stats.brename_any_mop_vld_ren_dec_stall_rr;
         }   
     } else if (renameStatus[tid] == Squashing) {
@@ -598,7 +598,7 @@ Rename::rename(bool &status_change, ThreadID tid)
         // If we are currently in SerializeStall and resumeSerialize
         // was set, then that means that we are resuming serializing
         // this cycle.  Tell the previous stages to block.
-        if(Amoflag == 1){++stats.serializeStall_lin;}
+        if(Amoflag % 2){++stats.serializeStall_lin;}
         if (resumeSerialize) {
             resumeSerialize = false;
             block(tid);
@@ -682,7 +682,7 @@ Rename::renameInsts(ThreadID tid)
                 tid, free_rob_entries, free_iq_entries);
 
         blockThisCycle = true;
-        if(Amoflag == 1){stats.no_free_entries_lin++;}
+        if(Amoflag % 2){stats.no_free_entries_lin++;}
 
         block(tid);
 
@@ -838,7 +838,7 @@ Rename::renameInsts(ThreadID tid)
             serializeInst[tid] = inst;
 
             blockThisCycle = true;
-            if(Amoflag == 1){stats.serializeStall_lin_stall++;}
+            if(Amoflag % 2){stats.serializeStall_lin_stall++;}
 
             break;
         } else if ((inst->isStoreConditional() || inst->isSerializeAfter()) &&
@@ -882,40 +882,40 @@ Rename::renameInsts(ThreadID tid)
         // Decrement how many instructions are available.
         --insts_available;
     }
-    if (renamed_insts == 12 && fromDecode->decode_lin[12] == 1 && Amoflag == 1) {
+    if (renamed_insts == 12 && fromDecode->decode_lin[12] == 1 && Amoflag % 2) {
         ++stats.rename_12_mop_lin;
     }
-    if (renamed_insts == 11 && fromDecode->decode_lin[11] == 1 && Amoflag == 1) {
+    if (renamed_insts == 11 && fromDecode->decode_lin[11] == 1 && Amoflag % 2) {
         ++stats.rename_11_mop_lin;
     }
-    if (renamed_insts == 10 && fromDecode->decode_lin[10] == 1 && Amoflag == 1) {
+    if (renamed_insts == 10 && fromDecode->decode_lin[10] == 1 && Amoflag % 2) {
         ++stats.rename_10_mop_lin;
     }
-    if (renamed_insts == 9 && fromDecode->decode_lin[9] == 1 && Amoflag == 1) {
+    if (renamed_insts == 9 && fromDecode->decode_lin[9] == 1 && Amoflag % 2) {
         ++stats.rename_9_mop_lin;
     }
-    if (renamed_insts == 8 && fromDecode->decode_lin[8] == 1 && Amoflag == 1) {
+    if (renamed_insts == 8 && fromDecode->decode_lin[8] == 1 && Amoflag % 2) {
         ++stats.rename_8_mop_lin;
     }
-    if (renamed_insts == 7 && fromDecode->decode_lin[7] == 1 && Amoflag == 1) {
+    if (renamed_insts == 7 && fromDecode->decode_lin[7] == 1 && Amoflag % 2) {
         ++stats.rename_7_mop_lin;
     }
-    if (renamed_insts == 6 && fromDecode->decode_lin[6] == 1 && Amoflag == 1) {
+    if (renamed_insts == 6 && fromDecode->decode_lin[6] == 1 && Amoflag % 2) {
         ++stats.rename_6_mop_lin;
     }
-    if (renamed_insts == 5 && fromDecode->decode_lin[5] == 1 && Amoflag == 1) {
+    if (renamed_insts == 5 && fromDecode->decode_lin[5] == 1 && Amoflag % 2) {
         ++stats.rename_5_mop_lin;
     }
-    if (renamed_insts == 4 && fromDecode->decode_lin[4] == 1 && Amoflag == 1) {
+    if (renamed_insts == 4 && fromDecode->decode_lin[4] == 1 && Amoflag % 2) {
         ++stats.rename_4_mop_lin;
     }
-    if (renamed_insts == 3 && fromDecode->decode_lin[3] == 1 && Amoflag == 1) {
+    if (renamed_insts == 3 && fromDecode->decode_lin[3] == 1 && Amoflag % 2) {
         ++stats.rename_3_mop_lin;
     }
-    if (renamed_insts == 2 && fromDecode->decode_lin[2] == 1 && Amoflag == 1) {
+    if (renamed_insts == 2 && fromDecode->decode_lin[2] == 1 && Amoflag % 2) {
         ++stats.rename_2_mop_lin;
     }
-    if (renamed_insts == 1 && fromDecode->decode_lin[1] == 1 && Amoflag == 1) {
+    if (renamed_insts == 1 && fromDecode->decode_lin[1] == 1 && Amoflag % 2) {
         ++stats.rename_1_mop_lin;
     }
 
@@ -932,7 +932,7 @@ Rename::renameInsts(ThreadID tid)
     // If so then block.
     if (insts_available) {
         blockThisCycle = true;
-        if(Amoflag == 1){stats.has_renameinsts_lin++;}
+        if(Amoflag % 2){stats.has_renameinsts_lin++;}
     }
 
     if (blockThisCycle) {
@@ -1405,24 +1405,24 @@ Rename::checkStall(ThreadID tid)
     bool ret_val = false;
 
     if (stalls[tid].iew) {
-        if(Amoflag == 1){ stats.hrename_stall_from_iew_lin++;}
+        if(Amoflag % 2){ stats.hrename_stall_from_iew_lin++;}
         DPRINTF(Rename,"[tid:%i] Stall from IEW stage detected.\n", tid);
         ret_val = true;
     } else if (calcFreeROBEntries(tid) <= 0) {
-        if(Amoflag == 1){stats.hrename_stall_no_ROB_lin++;}
+        if(Amoflag % 2){stats.hrename_stall_no_ROB_lin++;}
         DPRINTF(Rename,"[tid:%i] Stall: ROB has 0 free entries.\n", tid);
         ret_val = true;
     } else if (calcFreeIQEntries(tid) <= 0) {
-        if(Amoflag == 1){stats.hrename_stall_no_IQ_lin++;}
+        if(Amoflag % 2){stats.hrename_stall_no_IQ_lin++;}
         DPRINTF(Rename,"[tid:%i] Stall: IQ has 0 free entries.\n", tid);
         ret_val = true;
     } else if (calcFreeLQEntries(tid) <= 0 && calcFreeSQEntries(tid) <= 0) {
-        if(Amoflag == 1){stats.hrename_stall_no_LSQ_lin++;}
+        if(Amoflag % 2){stats.hrename_stall_no_LSQ_lin++;}
         DPRINTF(Rename,"[tid:%i] Stall: LSQ has 0 free entries.\n", tid);
         ret_val = true;
     } else if (renameStatus[tid] == SerializeStall &&
                (!emptyROB[tid] || instsInProgress[tid])) {
-        if(Amoflag == 1){stats.hrename_stall_Serialize_ROB_not_empty_lin++;}
+        if(Amoflag % 2){stats.hrename_stall_Serialize_ROB_not_empty_lin++;}
         DPRINTF(Rename,"[tid:%i] Stall: Serialize stall and ROB is not "
                 "empty.\n",
                 tid);
@@ -1488,7 +1488,7 @@ Rename::checkSignalsAndUpdate(ThreadID tid)
     if (fromCommit->commitInfo[tid].squash) {
         DPRINTF(Rename, "[tid:%i] Squashing instructions due to squash from "
                 "commit.\n", tid);
-        if(Amoflag == 1){stats.cqs_stall_lin++;}
+        if(Amoflag % 2){stats.cqs_stall_lin++;}
         squash(fromCommit->commitInfo[tid].doneSeqNum, tid);
         return true;
     } else if (!fromCommit->commitInfo[tid].robSquashing &&
@@ -1529,7 +1529,7 @@ Rename::checkSignalsAndUpdate(ThreadID tid)
                     "[tid:%i] Done squashing, switching to serialize.\n", tid);
 
             renameStatus[tid] = SerializeStall;
-            if(Amoflag == 1){stats.serialize_stall_lin++;}
+            if(Amoflag % 2){stats.serialize_stall_lin++;}
             return true;
         } else if (resumeUnblocking) {
             DPRINTF(Rename,
